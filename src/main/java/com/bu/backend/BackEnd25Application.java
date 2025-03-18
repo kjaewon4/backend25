@@ -30,7 +30,11 @@ public class BackEnd25Application {
 				new AnnotationConfigApplicationContext();
 
 		ctx.register(javaConfig.class);
+		ctx.register(WheelConfig.class);
+
 		ctx.refresh();
+
+
 
 
 		Car car = (Car)ctx.getBean("car");		

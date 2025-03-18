@@ -3,6 +3,7 @@ package com.bu.backend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * 자바 코드에서 직접 빈(Bean)을 등록하고 관리할 수 있음
@@ -20,32 +21,38 @@ import org.springframework.context.annotation.Configuration;
 
 @ComponentScan("com.bu.backend")
 @Configuration
+@Import({WheelConfig.class})
 public class javaConfig {
 
     @Bean
-    public Car car() {
+    public Car car(CarFrame frame) {
         Car car = new Car();
-        car.setFrame(frame());
+        car.setFrame(frame);
 
         return car;
     }
 
     @Bean
-    public CarFrame frame(){
+    public CarFrame frame(Wheel hdWheel){
         CarFrame frame = new CarFrame();
-        frame.setWheel(adwheel());
+        frame.setWheel(hdWheel);
 
         return frame;
     }
 
-    @Bean
-    public HDWheel hdWheel(){
-        return new HDWheel();
-    }
-
-    @Bean
-    public ADWheel adwheel(){
-        return new ADWheel();
-    }
+//    @Bean
+//    public Wheel hdWheel(){
+//        HDWheel wheel = new HDWheel();
+//        wheel.setPrice(5000);
+//
+//        return wheel;
+//    }
+//
+//    @Bean
+//    public Wheel adwheel(){
+//        ADWheel wheel = new ADWheel();
+//        wheel.setPrice(6000);
+//        return new ADWheel();
+//    }
 
 }
