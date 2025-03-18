@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
 public class javaConfig {
 
     @Bean
-    public Car car(CarFrame frame) {
+    public Car car(CarFrame frame) {  // CarFrame 빈이 자동 주입됩니다.
         Car car = new Car();
         car.setFrame(frame);
 
@@ -33,7 +33,7 @@ public class javaConfig {
     }
 
     @Bean
-    public CarFrame frame(Wheel hdWheel){
+    public CarFrame frame(Wheel hdWheel){  // hdWheel 빈이 자동 주입됩니다.
         CarFrame frame = new CarFrame();
         frame.setWheel(hdWheel);
 

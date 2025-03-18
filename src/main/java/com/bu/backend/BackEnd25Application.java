@@ -14,7 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-@SpringBootApplication(exclude = SpringApplicationAdminJmxAutoConfiguration.class)
+@SpringBootApplication
+		(exclude = SpringApplicationAdminJmxAutoConfiguration.class)
 
 //@ComponentScan(basePackages = "com.bu.backend")
 public class BackEnd25Application {
@@ -34,10 +35,7 @@ public class BackEnd25Application {
 
 		ctx.refresh();
 
-
-
-
-		Car car = (Car)ctx.getBean("car");		
+		Car car = (Car)ctx.getBean("car");
 		
 		
 //		CarFrame frame = (CarFrame)ctx.getBean("frame");	
