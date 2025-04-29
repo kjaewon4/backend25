@@ -1,0 +1,56 @@
+<!-- src/main/resources/templates/mypage.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}" />
+</head>
+<body>
+<!-- 네비게이션 -->
+<div th:replace="~{nav :: nav}"></div>
+
+<div class="mypage-container">
+    <!-- 1. 프로필 카드 -->
+    <section class="profile-card">
+        <h2>내 정보</h2>
+        <p><strong>아이디:</strong> <span th:text="${user.userid}">userid</span></p>
+        <p><strong>닉네임:</strong> <span th:text="${user.usernickname}">nickname</span></p>
+        <p><strong>이름:</strong> <span th:text="${user.username}">username</span></p>
+        <p><strong>가입일:</strong>
+            <span th:text="${#temporals.format(user.creation, 'yyyy-MM-dd HH:mm')}">2025-04-22 10:00</span>
+        </p>
+    </section>
+
+    <!-- 2. 내가 쓴 글 -->
+    <section class="posts-section">
+        <h2>내가 작성한 글 (<span th:text="${#lists.size(posts)}">0</span>)</h2>
+        <ul class="posts-list">
+            <li th:each="post : ${posts}">
+                <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}">제목</a>
+                <span class="meta"
+                      th:text="${#temporals.format(post.creation, 'yyyy-MM-dd HH:mm')}">
+                        2025-04-21
+                    </span>
+            </li>
+        </ul>
+    </section>
+
+    <!-- 3. 내가 쓴 댓글 -->
+    <section class="comments-section">
+        <h2>내가 작성한 댓글 (<span th:text="${#lists.size(comments)}">0</span>)</h2>
+        <ul class="comments-list">
+            <li th:each="cm : ${comments}">
+                <a th:href="@{/post/{id}(id=${cm.board.id})}">
+                    <span th:text="${cm.content}">댓글 내용</span>
+                </a>
+                <span class="meta"
+                      th:text="${#temporals.format(cm.createdAt, 'yyyy-MM-dd HH:mm')}">
+                        2025-04-22 09:30
+                    </span>
+            </li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

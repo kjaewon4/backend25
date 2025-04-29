@@ -1,0 +1,62 @@
+<!-- templates/fragments/nav.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:fragment="nav">
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 40px;
+            background-color: #4534db;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-title {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-right span {
+            margin-right: 15px;
+        }
+    </style>
+
+    <nav>
+        <div class="nav-title">
+            <a th:href="@{/board}">MyBoard</a>
+        </div>
+        <div class="nav-right">
+            <span th:if="${session.loginUser != null}">
+                <strong th:text="${session.loginUser.userid}">사용자</strong>님
+                <a th:href="@{/logout}">로그아웃</a>
+                <a th:href="@{/mypage}">마이페이지</a>
+            </span>
+            <span th:if="${session.loginUser == null}">
+                <a th:href="@{/login}">로그인</a>
+                <a th:href="@{/signup}">회원가입</a>
+            </span>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

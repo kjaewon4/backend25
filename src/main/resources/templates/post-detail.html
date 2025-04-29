@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세보기</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        .post-container {
+            width: 70%;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .post-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .post-meta {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .post-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .comment-section h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            font-size: 14px;
+        }
+
+        .comment-form button {
+            margin-top: 10px;
+            padding: 10px 18px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .comment-form button:hover {
+            background-color: #2980b9;
+        }
+
+        .comment-item {
+            border-top: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .comment-writer {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .delete-comment-form button {
+            padding: 6px 12px;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .delete-comment-form button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{nav :: nav}"></div>
+
+<div class="post-container">
+    <div class="post-title" th:text="${post.title}"></div>
+    <div class="post-meta">
+        작성자: <span th:text="${post.writer}"></span> |
+        작성일: <span th:text="${#temporals.format(post.creation, 'yyyy-MM-dd HH:mm')}"></span>
+    </div>
+    <div class="post-content" th:text="${post.content}"></div>
+
+    <!-- 댓글 영역 -->
+    <div class="comment-section">
+        <h3>댓글</h3>
+        <!-- 댓글 작성 폼 -->
+        <div class="comment-form" th:if="${session.loginUser != null}">
+            <form th:action="@{/comment}" method="post">
+                <input type="hidden" name="boardId" th:value="${post.id}" />
+                <textarea name="content" placeholder="댓글을 입력하세요" required></textarea>
+                <button type="submit">댓글 작성</button>
+            </form>
+        </div>
+        <div th:if="${session.loginUser == null}" style="color: gray; margin-top: 20px; margin-bottom: 20px;">
+            댓글을 작성하려면 <a th:href="@{/login}">로그인</a>이 필요합니다.
+        </div>
+
+        <div th:if="${#lists.isEmpty(comments)}">댓글이 없습니다.</div>
+        <div th:each="comment : ${comments}" class="comment-item">
+            <div class="comment-writer" th:text="${comment.writer}"></div>
+            <div th:text="${comment.content}"></div>
+            <div class="comment-date" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+
+            <!-- 삭제 버튼: 로그인한 사용자와 댓글 작성자가 같을 때만 보이기 -->
+            <form th:if="${session.loginUser != null and session.loginUser.userid == comment.writer}"
+                  th:action="@{/comment/delete}" method="post" class="delete-comment-form">
+                <input type="hidden" name="commentId" th:value="${comment.id}" />
+                <input type="hidden" name="boardId" th:value="${post.id}" />
+                <button type="submit">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div th:replace="~{nav :: nav}"></div>
+<div class="auth-container">
+    <h2>로그인</h2>
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="userid" placeholder="아이디" required />
+        <input type="password" name="userpass" placeholder="비밀번호" required />
+        <button type="submit">로그인</button>
+    </form>
+    <p th:if="${error}" th:text="${error}" class="error"></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판 목록</title>
+    <link rel="stylesheet" th:href="@{/css/pagination.css}" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px 18px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4534db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button, input[type="submit"] {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2980b9;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background-color: #1c6692;
+        }
+
+        .board-form {
+            width: 60%;
+            margin: 30px auto;
+            display: none;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .edit-btn {
+            margin-right: 10px;
+        }
+
+        .new-post-btn {
+            display: block;
+            margin: 20px auto;
+            background-color: #4534db;
+        }
+
+        .new-post-btn:hover {
+            background-color: #3221cd;
+        }
+
+        .current {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{nav :: nav}"></div>
+
+<h1>게시판 목록</h1>
+<button class="new-post-btn" onclick="toggleNewForm()">새 글 작성</button>
+
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+        <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post, stat : ${postsPage.content}">
+        <td th:text="${stat.count}"></td>
+        <td><a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a></td>
+        <td th:text="${post.writer}"></td>
+        <td th:text="${#temporals.format(post.creation, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+            <div th:if="${session.loginUser != null and session.loginUser.userid == post.writer}">
+                <button
+                        class="edit-btn"
+                        th:data-id="${post.id}"
+                        th:data-title="${post.title}"
+                        th:data-writer="${post.writer}"
+                        th:data-content="${post.content}">
+                    수정
+                </button>
+                <form th:action="@{/post/delete/{id}(id=${post.id})}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                </form>
+            </div>
+            <div th:if="${session.loginUser == null or session.loginUser.userid != post.writer}">
+                -
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<form class="board-form" id="newPostForm" th:action="@{/createBoard}" method="post">
+    <h3>새 글 작성</h3>
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="content">내용</label>
+    <textarea id="content" name="content" rows="10" required></textarea>
+    <button type="submit">작성 완료</button>
+</form>
+
+<form id="editPostForm" class="board-form" action="/updateBoard" method="post">
+    <input type="hidden" id="editId" name="id">
+    <label for="editTitle">제목</label>
+    <input type="text" id="editTitle" name="title" required>
+    <label for="editWriter">작성자</label>
+    <input type="text" id="editWriter" name="writer" required readonly>
+    <label for="editContent">내용</label>
+    <textarea id="editContent" name="content" required></textarea>
+    <button type="submit">수정 완료</button>
+</form>
+
+<div class="pagination">
+    <a th:if="${postsPage.hasPrevious()}"
+       th:href="@{/board(page=${postsPage.number - 1}, size=${postsPage.size})}">
+        &lt; 이전
+    </a>
+
+    <span th:each="i : ${#numbers.sequence(0, postsPage.totalPages - 1)}">
+    <a th:href="@{/board(page=${i}, size=${postsPage.size})}"
+       th:text="${i + 1}"
+       th:classappend="${i == postsPage.number} ? 'current'">
+    </a>
+  </span>
+
+    <a th:if="${postsPage.hasNext()}"
+       th:href="@{/board(page=${postsPage.number + 1}, size=${postsPage.size})}">
+        다음 &gt;
+    </a>
+</div>
+
+
+<script th:inline="javascript">
+    function toggleNewForm() {
+        const form = document.getElementById("newPostForm");
+        form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+        document.getElementById("editPostForm").style.display = "none";
+    }
+
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('editId').value = button.dataset.id;
+            document.getElementById('editTitle').value = button.dataset.title;
+            document.getElementById('editWriter').value = button.dataset.writer;
+            document.getElementById('editContent').value = button.dataset.content;
+            document.getElementById('editPostForm').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('editPostForm').offsetTop - 100, behavior: 'smooth' });
+        });
+    });
+</script>
+
+</body>
+</html>
